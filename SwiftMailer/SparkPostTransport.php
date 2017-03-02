@@ -6,6 +6,7 @@ use SparkPost\SparkPost;
 use GuzzleHttp\Client;
 use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 
+use SparkPost\SparkPostResponse;
 use \Swift_Events_EventDispatcher;
 use \Swift_Events_EventListener;
 use \Swift_Events_SendEvent;
@@ -119,7 +120,11 @@ class SparkPostTransport implements Swift_Transport
         $promise= $sparkPost->transmissions->post($sparkPostMessage);
 
         try {
-            $this->resultApi = $promise->wait();
+
+            /** @var SparkPostResponse $sparkPostResponse */
+            $sparkPostResponse = $promise->wait();
+            $this->resultApi = $sparkPostResponse->getBody();
+
         } catch (\Exception $e) {
             throw $e;
         }
